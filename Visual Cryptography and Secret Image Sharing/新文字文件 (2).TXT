@@ -1,0 +1,72 @@
+public static BufferedImage  RGB_img_share_Visual_Cryptography_share(BufferedImage RGB_img,BufferedImage RGB_img_share,int share) throws IOException {
+		
+		System.out.print("\n");
+		  System.out.print("讀取影像 pixel \n");
+	    int[]  [] pixels = getpixels(RGB_img);	    
+	    int[]  [] pixel_share_1 = new int[RGB_img.getWidth()][RGB_img.getHeight()];
+        int[]  [] pixel_share_2 = new int[RGB_img.getWidth()][RGB_img.getHeight()];
+        int[]  [] pixel_share_3 = new int[RGB_img_share.getWidth()][RGB_img_share.getHeight()];
+ 
+
+        
+        
+        for(int i=0;i<pixel_share_1.length;i++)
+        {
+        	  for(int j=0;j<pixel_share_1[0].length;j++)
+  	        {
+        	if( pixels[i][j]==255) // 255 為白色 
+        	{
+        		  int 	r =(int)(Math.random()* 2);
+        	
+        		  pixel_share_1[i][j]=r;
+        		  pixel_share_2[i][j]= r;
+        		  pixel_share_3[i][j]=r;
+        	}
+        	else  // 黑色 部分 main 主要
+        	{
+      
+      		  
+      		if(  pixel_share_1[i][j]==1)
+     		  {
+     			pixel_share_2[i][j]=0;
+     			pixel_share_3[i][j]=0;
+     		  }
+      		
+     		 if(  pixel_share_1[i][j]==0)
+     		  {
+     			pixel_share_2[i][j]=1;
+     			pixel_share_3[i][j]=1;
+     		  }
+     		  
+        	}
+  	        }
+  	        }
+//-----------------------------------------------//
+      
+
+        
+        pixel_share_1=pixel_share_0(pixel_share_1); // 分享影像1白色 跟 黑色一樣
+   
+       pixel_share_2=pixel_share_0(pixel_share_2); // 分享影像2  白色跟黑色 不一樣
+       
+       pixel_share_3=pixel_share_0(pixel_share_3); // 分享影像1白色 跟 黑色一樣
+         int[]  [] pixel_share = new int[pixel_share_1[0].length][pixel_share_1.length];
+     pixel_share=pixel_share_AND(pixel_share,pixel_share_2,pixel_share_3);
+	//---------------------------------------------------------//
+	  switch(share)
+	  {
+	  /*
+	   * pixel_share = 該圖像
+	   * pixel_share_1= 那個影藏影像share_1
+	   * pixel_share_2= 那個影藏影像share_2
+	   */
+	  case 0:
+		  System.out.println("輸出影像"); 
+	      RGB_img_share=getImagePixel(RGB_img_share,pixel_share);
+	    	break;
+	  default: 
+	      System.out.println("其他數字 _ BUG"); 
+	      break;
+	}
+	return RGB_img_share;	
+	}

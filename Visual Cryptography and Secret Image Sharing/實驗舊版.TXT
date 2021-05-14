@@ -1,0 +1,86 @@
+public static BufferedImage  RGB_img_share_convert(BufferedImage RGB_img,BufferedImage RGB_img_share,int share) throws IOException {
+	
+	System.out.print("\n");
+	  System.out.print("讀取影像 pixel \n");
+    int width = RGB_img.getWidth();
+    int height = RGB_img.getHeight();
+    int[]  [] pixels = new int[width][height];
+    for(int i=0;i<width;i++)
+    {
+    	  for(int j=0;j<height;j++)
+	        {
+    		  int rgb = RGB_img.getRGB(i, j);
+    		  int r = (rgb & 0xff0000) >> 16;
+              int g = (rgb & 0x00ff00) >> 8;
+              int b = rgb & 0x0000ff;
+              int gray = (r + g + b) / 3;
+              pixels[i][j]=gray;
+    		  System.out.print(" gray.pixel =  ["+i+"] ["+ j+"] =  "+gray );
+	        }
+    	  System.out.print("\n");
+    }
+  
+//     
+    //--------------------------------------------------//
+//    ImageShow(pixels);
+//---------------------------------------------------------//
+    
+
+	 int[]  [] pixel_share_1 = new int[width][height];
+	 int[]  [] pixel_share_2 = new int[width][height];
+
+    for(int i=0;i<pixel_share_1.length;i++)
+    {
+    	  for(int j=0;j<pixel_share_1[0].length;j++)
+	        {
+    	if( pixels[i][j]==255) // 255 為白色
+    	{
+    		  int 	r =(int)(Math.random()* 2);
+    		  pixel_share_1[i][j]=r;
+ 
+    			pixel_share_2[i][j]=  pixel_share_1[i][j]; //改進
+    	}
+    	else  // 黑色 部分
+    	{
+    		int 	r =(int)(Math.random()* 2);
+  		  pixel_share_1[i][j]=r;
+  		  if(  pixel_share_1[i][j]==1)
+  		  {
+  			pixel_share_2[i][j]=0;
+  		  }
+  		  if(  pixel_share_1[i][j]==0)
+  		  {
+  			pixel_share_2[i][j]=1;
+  		  }
+    	}
+	        }
+	        }
+
+     pixel_share_1=pixel_share_0(pixel_share_1); // 分享影像1白色 跟 黑色一樣
+    
+     pixel_share_2=pixel_share_0(pixel_share_2); // 分享影像2  白色跟黑色 不一樣
+
+      int[]  [] pixel_share = new int[pixel_share_1[0].length][pixel_share_1.length];
+  pixel_share=pixel_share_AND(pixel_share,pixel_share_1,pixel_share_2);
+  switch(share)
+  {
+  /*
+   * pixel_share = 該圖像
+   * pixel_share_1= 那個影藏影像share_1
+   * pixel_share_2= 那個影藏影像share_2
+   */
+  case 0:
+      RGB_img_share=getImagePixel(RGB_img_share,pixel_share);
+    	break;
+  case 1:
+      RGB_img_share=getImagePixel(RGB_img_share,pixel_share_1);
+    	break;
+  case 2:
+      RGB_img_share=getImagePixel(RGB_img_share,pixel_share_2);
+    	break;
+  default: 
+      System.out.println("其他數字 _ BUG"); 
+      break;
+}
+return RGB_img_share;	
+}

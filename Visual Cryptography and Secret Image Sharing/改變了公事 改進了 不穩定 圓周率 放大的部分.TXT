@@ -1,0 +1,623 @@
+package b;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
+public class b {
+   
+	static int N=20;
+	static int x1 =bit(u_i_4( getX1_max(),getX1_min(),4)); // x1的 bit 
+	static int x2=bit(u_i_4(getX2_max(),getX2_min(),4)); //x2的bit
+	static  int  In_total_bit= bit(u_i_4( getX1_max(),getX1_min(),4))+bit(u_i_4(getX2_max(),getX2_min(),4)); // 全部的bit
+	 static int frequency =0;
+	static  double [][] some_N_frequency; 
+	public static void main(String[] args) {
+
+	
+		 do {
+			 double [][]  Chromosome;
+			 if(frequency==0)// 一開始
+			 {
+				 Chromosome = chromosome(); // 2*20 的亂數	
+			 }
+			 else
+			 {
+				 System.out.print("資料已送上來--OK \n");
+				 Chromosome=some_N_frequency; //由於 frequency==  1  最後 some_N_frequency也有人送上來
+				 for(int i=0;i<N;i++)
+				 {
+					 System.out.print("X "+ Chromosome[0][i]+" Y "+ Chromosome[1][i]+"\n");
+				 }
+				 
+			 }
+	
+	
+		 double []  adapt = new  double [N];// 被選擇機率陣列
+		 double []  adapt_data = new  double [N];// 累積機率陣列
+		 double [] Random_data = new  double [N];//亂數陣列
+		 int [] Roulette = new  int [N];//選擇的編馬
+			 int [][]chromosome= some(Chromosome);//new 個陣列給後面作複製用
+			 String [][] String_chromosome = new  String [2][N];
+			 Chromosome=Bit_calculation(Chromosome);// 位元陣列公式計算
+			 adapt=fx_y_2(Chromosome);//適應函數陣列運算
+		//---------------------複製-------------------------------------//
+			 adapt=Probability(adapt);//被選擇機率陣列
+			 adapt_data =Ddapt_data(adapt);//累積機率陣列
+			 Random_data=Random_number();//亂數[0...1] 小數位6->20個數字
+			//--------------輪盤選擇---------------//
+			for(int i=0;i<N;i++)
+			{
+				Roulette[i]=n(Random_data[i],adapt_data)+1;
+				
+				System.out.print("輪盤選擇 \n"+Roulette[i]);
+			}
+			System.out.print("\n");
+			for(int i=0;i<N;i++)
+			{
+				System.out.print(" C 原本 數據["+i+"]"+chromosome[0][i]+"  "+chromosome[1][i]+"\n");
+			}
+			System.out.print("\n");
+			for(int i=0;i<N;i++)
+			{
+				 //轉字串 所以  [0][1]="[0],["1000101010..等"]     // 數字轉字串位元 順便複製
+				String_chromosome[0][i]=Coding_to_s(chromosome[0][Roulette[i]],x1);
+				String_chromosome[1][i]=Coding_to_s(chromosome[1][Roulette[i]],x2);
+			}
+			for(int i=0;i<N;i++)
+			{
+				System.out.print(" C["+i+"]"+String_chromosome[0][i]+"  "+String_chromosome[1][i]+"    Roulette[i]"+Roulette[i]+"\n");
+			}
+			System.out.print("\n");
+			System.out.print(" 複製-OK \n\n ");
+		     //-----------字串轉數字去做交叉-----------------//
+			 double Pc =0.25;
+			 int []data=Random_data(Pc);
+			 int T=data.length/2; // 除以2 int 1.5代表1 次而已
+			 System.out.print("交換次數 T ="+ T+"\n");
+			//-------------------------------------------//
+		      	String []  some_N = new  String  [N];//連接33位元
+			for(int i=0;i<N;i++)
+			{
+				some_N[i]=String_chromosome[0][i]+String_chromosome[1][i];
+			}
+			int R=(int) (Math.random()*In_total_bit);//交叉點
+			int R2=(int) (Math.random()*In_total_bit);//交叉點
+           // 然後計算次數 2 2差去做
+			// // 字串交叉  [] 名稱  選到的 []  被選到的 []   In_total_bit  交叉點1 交叉點2
+			for(int i=0,j=1,n=0;n<T;i=i+2,j=j+2,n++)
+			{
+				some_N=Name(some_N,data[i],data[j],In_total_bit,R);
+			}
+			// 實數交叉OKOK
+	       //-------------------突變----------------------------------//
+			 double Pm =0.01;//百分比
+			 double Mutation=In_total_bit*N;//660個位元33*20
+			 int [] Mutation_data=Mutation_Random_data(Mutation,Pm);// 小於pm的 亂數
+			 int [] Mutation_Data = new int [Mutation_data.length] ;
+			 Mutation_Data=Mutation_data;
+			 int [] Mutation_Data_data = new int [Mutation_data.length] ;
+			 for(int i=0;i<Mutation_data.length;i++)
+			 {       //意思 1       =       100      -         3  *     33
+				 //染色體中的位置 =  原本的小於機率的機率亂數- 找出多少N/33編號 *33
+				 Mutation_Data_data[i]=Mutation_Data[i]-(Mutation(Mutation_data[i])*33);
+				 System.out.print("染色體編號"+	Mutation(Mutation_data[i]) +"染色體中的位置"+Mutation_Data_data[i]+"\n");
+			 }
+			 for(int i=0;i<Mutation_data.length;i++)
+		      {
+		    			  System.out.print( "突變前 name "+some_N[ Mutation(Mutation_data[i])]+"\n");
+		    			  some_N[Mutation(Mutation_data[i])]=Mutation_to_string_0_1(some_N[ Mutation(Mutation_data[i])],Mutation_Data_data[i]);
+		      }
+			//----計算 適應值------//
+			 System.out.print( "\n");
+			 for(int i=0;i<Mutation_data.length;i++)
+			 {
+				 System.out.print( " 確認_OK  "+some_N[Mutation(Mutation_data[i])]+"\n");
+			 }
+			 System.out.print( "計算 適應值"+"\n");
+			 int [][] Some_= new  int [2][N] ;
+			 Some_=some_N(some_N,x1,x2); // 拿到基本數字
+			 frequency++;
+			 System.out.print( "\n");
+			 System.out.print( "計算 frequency = ["+frequency+"]"+"\n");
+				
+				System.out.print("x1  "+x1 +"x2"+x2);
+			 System.out.print( "\n");
+			 getSome_(Some_);
+			 
+			 
+		 }while(frequency<20);// 執行1000次
+	
+		 
+		 
+	}
+	public static  void getSome_(int [][] some_)
+	{
+		 double[][] some= new  double [2][N] ;
+		 for(int i=0;i<N;i++)
+		 {
+			 some[0][i]=some_[0][i];
+			 some[1][i]=some_[1][i];
+			 
+			// System.out.print(" X="+some[0][i]+" y"+some[1][i]+"\n");
+		 }
+		some_N_frequency=some;
+		
+	}
+	public static int[][] some_N (String []some_N,int x1,int x2)
+	{	
+		
+		 int  [][] Some= new  int [2][N] ;
+		for(int c=0;c<some_N.length;c++)
+		{ System.out.println("X1= "+some_N[c]);
+		String X1 =   (String) some_N[c] .subSequence(0,x1/2);
+		String X2 =   (String) some_N[c].subSequence(x1/2,x1);
+		//-----------------------------------------------//
+		String Y1 =   (String)some_N[c].subSequence(x1, x1+(x2/2+1));
+		String Y2 =   (String) some_N[c] .subSequence(x1+(x2/2+1), x1+x2);
+		 System.out.println("X1= " + X1 +" X2= "+X2 +" Y1= "+Y1+" Y2= "+Y2+"  some_N.length= "+some_N.length);
+     //    System.out.println("     \n");
+         double [] one1 =I(X1,x1/2) ;
+         double [] one2 =I(X2,x1/2) ;
+         double [] two1 =I(Y1,(x2/2+1));
+         double [] two2=I(Y2,(x2/2));
+         double [] Ione1 = new double[x1] ;
+         double [] Ione2 = new double[x2] ;
+         for(int i=0;i<one1.length;i++)
+         {
+        	 Ione1[i]=one1[i];
+         }
+         for(int i=0,j=one1.length;i<one1.length;i++,j++)
+         {
+        	 Ione1[j]=one2[i];
+         }
+         //----OKOK-------//
+         for(int i=0;i<two1.length;i++)
+         {
+        	 Ione2[i]=two1[i];
+        	// System.out.println(Ione2[i]);
+         }
+         for(int i=0,j=two1.length;i<two2.length;i++,j++)
+         {
+        	 Ione2[j]=two2[i];
+         }
+         int x= SUM_data(Ione1);
+         int y= SUM_data(Ione2);
+       //  System.out.println("總數  x1 = "+  x+" x2 ="+y);
+       //   
+         Some[0][c]=x;
+         Some[1][c]=y;
+         System.out.println("Some = "+    Some[0][c]+" x2 ="+ Some[1][c]);
+		}
+		return Some;         
+
+	}
+  
+	// -----I[i]=01010101------轉成數值-------------//
+	public static  int  SUM_data(double []Ione2 )
+	{
+		for(int i=0,j=Ione2.length-1;i< Ione2.length;i++,j--)
+		{
+     		Ione2[i]=Ione2[i]*Math.pow(2,j);
+		
+		}int SUM=0;
+		for(int i=0;i< Ione2.length;i++)
+		{
+			SUM=(int) (SUM+Ione2[i]);
+		
+		}
+		return SUM;
+	}
+	public static   double  [] I(String mating_y,int OP)
+	{
+		int nmae=Integer.parseInt(mating_y);
+		double b=0;
+		int c=0;
+		double []  I = new  double [OP];
+		for(int i=OP-1;i>=0;i--)
+		{
+			b=nmae%10;
+			 I[i]=b;
+			 nmae = nmae/10;	
+		}
+		return  I;
+	}
+	//由左至右 
+	public static  String  Mutation_to_string_0_1(String name ,int n)
+	{
+		String some_x =(String) name .subSequence(0, n);
+		String some_y;
+		String some_z;
+		if(n==33)
+		{
+			some_y=(String) name .subSequence(n, n)   ;
+			some_z =   (String) name.subSequence(n, In_total_bit);
+		}
+		else
+		{
+			some_y=(String) name .subSequence(n, n+1);
+			 some_z =   (String) name.subSequence(n+1, In_total_bit);
+		}
+
+		if(some_y !=null && !some_y .equals("")){
+			int SN=Integer.parseInt(some_y);
+			if(SN>0)
+			{
+				some_y="0";
+			}else
+			{
+				some_y="1";
+			}
+			}
+		String Name=some_x+some_y+some_z;
+		System.out.print("突變後  Name "+Name+"\n");
+		return Name;
+	}
+	// 找出亂數的/33的次數
+	public static int  Mutation(double Mutation_data)
+	{
+		 int Mutation_n = 0;
+		 for(int i=0;i<N;i++)
+		 {
+			
+			 if(33*i<Mutation_data)
+			 {
+				 Mutation_n=i;
+		
+			 }
+		 }
+		return Mutation_n;
+	}
+	//Mutation_Random_data 突變的亂數
+ 	public static   int[] Mutation_Random_data(double Mutation,double Pm)
+	{
+		 double [] Random_data = new  double [(int) Mutation];
+		 for(int i=0;i<Mutation;i++)
+		 {
+			 double  r =(Math.random()* 1000000)/1000000;
+			 Random_data[i]=r;
+		 }
+			int data=-1;
+			 int []data2= new  int [(int) Mutation];
+			for(int i=0;i<Random_data.length;i++)
+			{
+				
+				if(Random_data[i]<Pm)
+				{
+					data++;
+					data2[data]=i;
+					//System.out.print(i+"\n");
+				}
+			}
+			 int []data3= new  int [data+1];
+	for(int i=0;i<data+1;i++)
+	{
+	data3[i]=data2[i];
+	System.out.print(" 個數小於 pm的"+data3[i]+"  "+"\n");
+	}
+			return data3;
+	}
+	// data 亂數要交叉的編碼 小於0.25 要被交叉的編碼
+	public static  int []  Random_data(double Pc )
+	{
+		 int []data2= new  int [N];
+		double [] Random_data2 = new  double [N];
+		Random_data2=Random_number();
+		int data=-1;
+		for(int i=0;i<Random_data2.length;i++)
+		{
+			
+			if(Random_data2[i]<Pc)
+			{
+				data++; // 為了第0個 所以 data -1
+				data2[data]=i; // 等於我要的次數編碼
+				//System.out.print(i+"\n");
+			}
+		}
+		 int []data3= new  int [data+1];
+for(int i=0;i<data+1;i++)
+{
+data3[i]=data2[i];
+System.out.print(" 小於0.25 要被交叉的編碼 "+data3[i]+"  "+"\n");
+}
+
+for(int i=0; i<data3.length;i++)
+{
+	data3[i]=(19-data3[i]);
+	System.out.print(	" 因為 0 ~ 19 所以( 19-機率小的 )data 3  = "+(data3[i])+"\n");
+}
+
+return data3;
+	}
+	                              // 字串交叉  [] 名稱  選到的 []  被選到的 []   In_total_bit  . 交叉點
+	public static  String[] Name (String []  some_N,int X_x ,int  Y_y,int In_total_bit,int n)
+	{   
+		 System.out.print(" data [i] ="+X_x+" data [j]="+Y_y+"\n ");
+
+		String some_x =   (String) some_N[X_x] .subSequence(0, n);
+		String some_X =   (String) some_N[X_x] .subSequence(n, In_total_bit);
+		String some_y =   (String)  some_N[Y_y].subSequence(0, n);
+		String some_Y =   (String)  some_N[Y_y] .subSequence(n, In_total_bit);
+		String X=some_x+some_Y;
+		String Y=some_y+some_X;
+		some_N[X_x]= X;
+		some_N[Y_y]= Y;
+		System.out.print(" i ="+X+" j="+Y+" \n");
+		
+		
+	//----------//
+		return some_N;
+	}
+    // 字串實數原理交叉  [] 名稱  選到的 []  被選到的 []   In_total_bit  . 交叉點
+public static  String[] Name2 (String []  some_N,int X_x ,int  Y_y,int In_total_bit,int n,int n1)
+{   
+System.out.print(" data [i] ="+X_x+" data [j]="+Y_y+"\n ");
+// 怕交叉點亂掉
+int N;
+if(n1>n)
+{
+	N=n1;
+	n1=n;
+	n=N;
+	}
+
+String some_x =   (String) some_N[X_x] .subSequence(0, n1);
+String some_y =   (String) some_N[X_x] .subSequence(n1, n);
+String some_z =   (String) some_N[X_x] .subSequence(n, In_total_bit);
+String some_X =   (String)  some_N[Y_y].subSequence(0, n1);
+String some_Y =   (String)  some_N[Y_y] .subSequence(n1, n);
+String some_Z =   (String)  some_N[Y_y] .subSequence(n, In_total_bit);
+// 
+String X=some_x+some_Y+some_z;
+String Y=some_X+some_y+some_Z;
+some_N[X_x]= X;
+some_N[Y_y]= Y;
+System.out.print(" i ="+X+" j="+Y+" \n");
+//----------//
+return some_N;
+}
+	// 十轉二
+	 public static   String  Coding_to_s(int a, int op)
+	 {
+			int x=a,y=0; 
+			String s="";
+			for(int i=0;i<op;i++){
+				y=x%2;
+				x=x/2;
+				s=Integer.toString(y)+s;
+			}
+			return s;
+	 }
+	 // new 一個 原始資料
+	public static   int [][] some (double [][]Chromosome)
+	{
+		int [][] chromosome =new  int[2][N];
+		  for(int i=0;i<2;i++)
+		  {
+			  
+			  for(int j=0;j<N;j++)
+			  {
+				  chromosome[i][j]=(int) Chromosome[i][j];
+			  }
+		  }
+		return chromosome;
+	}
+	// 選擇
+	 public static   int  n (double Random_data,double [] adapt_data )
+	   {
+		   int n=0;
+			 for(int i=0; i<N;i++)
+			 {
+				 if(Random_data>adapt_data[i])
+				 {
+					 n=i;
+					// System.out.print("n "+n+" i= "+i+"Random_data[0]"+Random_data+"  adapt_data[i]"+adapt_data[i]+"\n");
+					 
+				 }
+			 }
+		   
+			return n;
+	   }
+	//亂數_20個//
+	 public static  double  [] Random_number(  )
+	 {
+		 double [] Random_data = new  double [N];
+		 for(int i=0;i<N;i++)
+		 {
+			 double  r =(Math.random()* 1000000)/1000000;
+			 Random_data[i]=r;
+		 }
+			return Random_data;
+	 }
+	//適應函數陣列運算
+ 	 public static   double  [] fx_y_2(double [][] Chromosome)
+	 { 
+		 double []  adapt = new  double [N];
+		 for(int j=0;j<N;j++)
+	 	{
+	       	double x1= bi_6(Chromosome[0][j] );
+		    double x2= bi_6(Chromosome[1][j]);
+           adapt[j]=fx_y(x1,x2);
+			}
+		return adapt; 
+	 }
+	// 位元陣列公式計算
+	 public static  double[][] Bit_calculation( double [][] Chromosome )
+	 {
+		 for(int j=0 ;j <N;j++)
+			{  // 位元計算
+				Chromosome[0][j]=fx(getX1_max(),getX1_min(),x1,(Chromosome[0][j]));
+				Chromosome[1][j]=fx(getX2_max(),getX2_min(),x2,(Chromosome[1][j]));
+			}
+		 return Chromosome;
+	 }
+	// 累積機率陣列
+ 	 public static   double []  Ddapt_data(double []adapt)
+	 {
+		 double []  adapt_data = new  double[N];
+		 double SUM=0;
+		 for(int i=0;i<adapt.length;i++)
+		 {
+			 SUM=SUM+adapt[i];
+			 adapt_data[i]=SUM;
+			System.out.print("累積的機率 "+adapt_data[i]+"\n");
+			
+		 }
+		 
+			return adapt_data;
+	 }
+	// 總機率 陣列
+	   public static  double []Probability(double [] adapt )
+	   {
+	    double SUM=0;
+		   for(int i=0;i<adapt.length;i++)
+		   {
+			   SUM=SUM+ adapt[i];
+		   }
+		//   System.out.print("全部的適應值 "+SUM+"\n");
+		   for(int i=0;i<adapt.length;i++)
+			{
+			   adapt[i]=(adapt[i]/SUM);
+	//		System.out.print(" FX 機率 "+(adapt[i])+"\n");
+			}
+		   
+		   adapt=max_fx(adapt);
+		   System.out.println("所以最大的機率是  "+adapt[0] );
+		   try {
+			   txt1(adapt[0]);
+			   txt2(adapt[19]);
+			txt3(adapt[0]-adapt[19]);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+			return adapt;
+	   }  public static void txt1  (double adapt) throws IOException
+	    {
+		    
+	    	
+	    	File writename = new File("C:\\Users\\zx781\\OneDrive\\桌面\\基因演算法\\out_圖表\\output_最大.txt"); // 相對路徑，如果沒有則要建立一個新的output。txt檔案
+	    	writename.createNewFile(); // 建立新檔案
+	    	BufferedWriter out = new BufferedWriter(new FileWriter(writename,true)); // 保留原本的資廖
+	    	out.write(adapt+"\r\n"); // \r\n即為換行
+	    	out.flush(); // 把快取區內容壓入檔案
+	    	out.close(); // 最後記得關閉檔案
+	    
+	    }
+	   public static void txt2 (double adapt) throws IOException
+	    {
+	    
+	    	
+	    	File writename = new File("C:\\Users\\zx781\\OneDrive\\桌面\\基因演算法\\out_圖表\\output_最小.txt"); // 相對路徑，如果沒有則要建立一個新的output。txt檔案
+	    	writename.createNewFile(); // 建立新檔案
+	    	BufferedWriter out = new BufferedWriter(new FileWriter(writename,true)); // 保留原本的資廖
+	    	out.write(adapt+"\r\n"); // \r\n即為換行
+	    	out.flush(); // 把快取區內容壓入檔案
+	    	out.close(); // 最後記得關閉檔案
+	    
+	    }
+	    public static void txt3 (double adapt) throws IOException
+	    {
+	    
+	    	
+	    	File writename = new File("C:\\Users\\zx781\\OneDrive\\桌面\\基因演算法\\out_圖表\\output_平均數.txt"); // 相對路徑，如果沒有則要建立一個新的output。txt檔案
+	    	writename.createNewFile(); // 建立新檔案
+	    	BufferedWriter out = new BufferedWriter(new FileWriter(writename,true)); // 保留原本的資廖
+	    	out.write(adapt+"\r\n"); // \r\n即為換行
+	    	out.flush(); // 把快取區內容壓入檔案
+	    	out.close(); // 最後記得關閉檔案
+	    
+	    }
+	    
+	   public static  double[]  max_fx(double [] adapt)
+	   {
+	
+		   int i,j;
+		   double tmp;
+		   for (i=adapt.length-1;i>=0;i=i-1)
+		   {
+		   for (j=0;j<i;j=j+1)
+		   {
+		   if (adapt[j]<adapt[i])//換（"小於"是由大到小）
+		   {
+		   tmp= adapt[j];
+		   adapt[j]=adapt[i];
+		   adapt[i]=tmp;
+		   }
+		   }
+		   }
+		   for (i=0;i<adapt.length;i=i+1)
+		   System.out.println(adapt[i]);
+		   
+		return adapt;
+		   
+	   }
+     //---亂數 20 * 2行列陣列 (Math.pow(2, x1)    並已經計算次適應的 x1 x2 -//	 
+     public static   double [][] chromosome( )
+	{
+    		double [][]  Chromosome  = new double[ 2] [N];
+         	for(int j=0;j<N;j++)
+				{                           
+         		Chromosome[0][j]=(int) (Math.random()*(Math.pow(2, x1)));
+         		Chromosome[1][j]=(int)(Math.random()*(Math.pow(2, x2)));
+				}
+		return Chromosome;
+		
+	}
+	  //--double四捨五入到小數點後6位--//
+	  public static  double  bi_6 (double d)
+	  {
+		return  Math.round(d* 1000000.0) / 1000000.0;
+	  }
+ 	  //位元公式
+	  public static double  fx (double max , double min,int n,double X)
+	     {
+		  float N=  (float) (min+X*(max-min)/(Math.pow(2, n)-1));
+			return N;
+	     }
+	 // 一開始定義
+ 	  public static double  u_i_4 (double max , double min,int n)
+     {
+		return (max-min)*Math.pow(10, n);
+     }
+	 //求 bit 
+	 public static int bit(double x1)
+	 {
+		 int x2=0;
+		 float x3=0; do {
+					 x2++;
+					 x3=(float) (x1/Math.pow(2, x2));
+					 }while(x3>1);
+		 return x2;
+	 }
+    // 適應函數公式
+	 public static double  fx_y (double x1, double x2)
+          {
+    	   double Pi=(double) Math.PI;
+        	  double n= x1*Math.sin(4*Pi*x1)+x2*Math.sin(20*Pi*x2);
+			return  n;
+          }
+    // 設定 最大 以及最小
+	 public static double getX1_max()
+     {
+      	 double X1_max=12.1;
+ 		return  X1_max=12.1;
+     }
+     public static double getX1_min()
+     {	double X1_min=-3;
+    	 return X1_min;
+     }
+     public static double getX2_min()
+     {	double X2_min=4.1;
+    	 return X2_min;
+     }
+     public static double getX2_max()
+     {
+       	 double X2_max=5.8;
+  		return  X2_max=5.8;
+     }
+
+}
